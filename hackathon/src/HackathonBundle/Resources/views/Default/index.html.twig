@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clever</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="answers"
+     style="display: inline-block; width: 100%; height: 300px; border-width: 3px; border-style: double; overflow: auto">
+
+</div>
+
+<form id="chat">
+    <input type="text" id="question"><input type="submit"><input type="button" value="rec" id="rec">
+</form>
+
+<script>
+    $(function () {
+        var question = $('#question');
+        var answer = $('.answers');
+
+        $(document).on('submit', '#chat', function () {
+
+            if (question.length != 0) {
+
+                question.attr({'disabled': true});
+                answer.append('Moi : ' + question.val() + '<br><span class="tempAnswer">Bot : <span class="point1">•</span><span class="point2">•</span><span class="point3">•</span></span>');
+
+                var inter = setInterval(function () {
+                    $('.point1').css({'color': '' + getRandomColor()});
+                    $('.point2').delay(100).css({'color': '' + getRandomColor()});
+                    $('.point3').delay(200).css({'color': '' + getRandomColor()});
+                }, 300);
+
+                $.ajax({
+                    url: '{{ path("getAnswer") }}',
+                    method: 'post',
+                    data: 'question=' + question.val(),
+                    success: function (data) {
+                        clearInterval(inter);
+                        $('.tempAnswer').remove();
+                        question.val('');
+                        question.attr({'disabled': false});
+                        question.focus();
+                        answer.scrollTop = answer.scrollHeight;
+                        answer.append('Bot : ' + data + '<br>');
+                    }
+                });
+            }
+            return false;
+        });
+        var check = false;
+        $(document).on('click', '#rec', function () {
+            if (check == false) {
+                question.attr({'disabled': true});
+                demarrerReconnaissanceVocale();
+                check = true;
+            } else {
+                question.attr({'disabled': false});
+                endReconnaissanceVocale();
+                check = false;
+            }
+        });
+        function endReconnaissanceVocale() {
+
+        }
+
+        function demarrerReconnaissanceVocale() {
+
+        }
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+
+    });
+</script>
+</body>
+</html>
