@@ -50,25 +50,6 @@
             }
             return false;
         });
-        var check = false;
-        $(document).on('click', '#rec', function () {
-            if (check == false) {
-                question.attr({'disabled': true});
-                demarrerReconnaissanceVocale();
-                check = true;
-            } else {
-                question.attr({'disabled': false});
-                endReconnaissanceVocale();
-                check = false;
-            }
-        });
-        function endReconnaissanceVocale() {
-
-        }
-
-        function demarrerReconnaissanceVocale() {
-            
-        }
 
         function getRandomColor() {
             var letters = '0123456789ABCDEF';

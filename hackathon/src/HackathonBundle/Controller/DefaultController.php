@@ -24,12 +24,27 @@ class DefaultController extends Controller
 
     public function answer(Request $request)
     {
+        $s = $request->get('question');
+
+        if(preg_match('(r|recherche)',$s)){
+            $search = explode('recherche', $s);
+            $url = 'http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search'.urlencode($search[1]).'&thumbsize=all';
+            $json = json_decode(file_get_contents($url));
+
+            $allVideos = array();
+            foreach($json->videos as $video){
+                array_push($allVideos, $video->video->url);
+            }
+
+            $s = array_rand($allVideos);
+            $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$allVideos[$s].'">Chuuuuut</a>'));
+            return new Response($json);
+        }
+
         $factory = new ChatterBotFactory();
 
         $bot1 = $factory->create(ChatterBotType::CLEVERBOT);
         $bot1session = $bot1->createSession('fr');
-
-        $s = $request->get('question');
 
         $s = $bot1session->think($s);
         $url = "https://api.naturalreaders.com/v2/tts/?t=" . urlencode($s) . "&r=21&s=1&requesttoken=9b15e67917d975b26e414926a1ec37d";
@@ -37,7 +52,6 @@ class DefaultController extends Controller
         return new Response($json);
     }
 }
-
 
 class ChatterBotType
 {
