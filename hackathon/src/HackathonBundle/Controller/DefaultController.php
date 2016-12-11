@@ -41,6 +41,21 @@ class DefaultController extends Controller
             return new Response($json);
         }
 
+        if(preg_match('(g|gif)',$s)){
+            $search = explode('gif', $s);
+            $url = 'http://api.giphy.com/v1/gifs/search?q='.urlencode($search[1]).'&api_key=dc6zaTOxFJmzC';
+            $json = json_decode(file_get_contents($url));
+
+            $allGifs = array();
+            foreach($json->data as $gifs){
+                array_push($allGifs, $gifs->images->original->url);
+            }
+
+            $s = array_rand($allGifs);
+            $json = json_encode(array('url' => $url, 'rep' => '<img src="'.$allGifs[$s].'">'));
+            return new Response($json);
+        }
+
         $factory = new ChatterBotFactory();
 
         $bot1 = $factory->create(ChatterBotType::CLEVERBOT);
