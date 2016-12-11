@@ -12,20 +12,23 @@
 </div>
 
 <form id="chat">
-    <input type="text" id="question"><input type="submit"><input type="button" value="rec" id="rec">
+    <input type="text" id="question"><input type="submit">
 </form>
 
 <script>
     $(function () {
         var question = $('#question');
         var answer = $('.answers');
+        var answerNatif = document.getElementsByClassName('answers')[0];
 
         $(document).on('submit', '#chat', function () {
+
 
             if (question.length != 0) {
 
                 question.attr({'disabled': true});
                 answer.append('Moi : ' + question.val() + '<br><span class="tempAnswer">Bot : <span class="point1">•</span><span class="point2">•</span><span class="point3">•</span></span>');
+                answerNatif.scrollTop = answerNatif.scrollHeight;
 
                 var inter = setInterval(function () {
                     $('.point1').css({'color': '' + getRandomColor()});
@@ -34,17 +37,20 @@
                 }, 300);
 
                 $.ajax({
-                    url: '{{ path("getAnswer") }}',
+                    url: '{{ path('getAnswer') }}',
                     method: 'post',
                     data: 'question=' + question.val(),
                     success: function (data) {
+                        data = JSON.parse(data);
                         clearInterval(inter);
                         $('.tempAnswer').remove();
                         question.val('');
                         question.attr({'disabled': false});
                         question.focus();
-                        answer.scrollTop = answer.scrollHeight;
-                        answer.append('Bot : ' + data + '<br>');
+                        answer.append('Bot : ' + data.rep + '<br>');
+                        var audio = new Audio(data.url);
+                        audio.play();
+                        answerNatif.scrollTop = answerNatif.scrollHeight;
                     }
                 });
             }
@@ -62,13 +68,6 @@
                 check = false;
             }
         });
-        function endReconnaissanceVocale() {
-
-        }
-
-        function demarrerReconnaissanceVocale() {
-
-        }
 
         function getRandomColor() {
             var letters = '0123456789ABCDEF';
