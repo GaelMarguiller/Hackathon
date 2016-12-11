@@ -26,7 +26,7 @@ class DefaultController extends Controller
     {
         $s = $request->get('question');
 
-        if(preg_match('(recherche)',$s)){
+        if(preg_match('(^recherche)',$s)){
             $search = explode('recherche', $s);
             $url = 'http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search='.urlencode($search[1]).'&thumbsize=all';
             $json = json_decode(file_get_contents($url));
@@ -41,7 +41,7 @@ class DefaultController extends Controller
             return new Response($json);
         }
 
-        if(preg_match('(gif)',$s)){
+        if(preg_match('(^gif)',$s)){
             $search = explode('gif', $s);
             $url = 'http://api.giphy.com/v1/gifs/search?q='.urlencode($search[1]).'&api_key=dc6zaTOxFJmzC';
             $json = json_decode(file_get_contents($url));
