@@ -26,9 +26,9 @@ class DefaultController extends Controller
     {
         $s = $request->get('question');
 
-        if(preg_match('(r|recherche)',$s)){
+        if(preg_match('(recherche)',$s)){
             $search = explode('recherche', $s);
-            $url = 'http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search'.urlencode($search[1]).'&thumbsize=all';
+            $url = 'http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search='.urlencode($search[1]).'&thumbsize=all';
             $json = json_decode(file_get_contents($url));
 
             $allVideos = array();
@@ -37,11 +37,11 @@ class DefaultController extends Controller
             }
 
             $s = array_rand($allVideos);
-            $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$allVideos[$s].'">Chuuuuut</a>'));
+            $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$allVideos[$s].'">Petit coquin</a>'));
             return new Response($json);
         }
 
-        if(preg_match('(g|gif)',$s)){
+        if(preg_match('(gif)',$s)){
             $search = explode('gif', $s);
             $url = 'http://api.giphy.com/v1/gifs/search?q='.urlencode($search[1]).'&api_key=dc6zaTOxFJmzC';
             $json = json_decode(file_get_contents($url));
