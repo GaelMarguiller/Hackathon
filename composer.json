@@ -1,0 +1,14 @@
+{
+    "autoload": {
+        "psr-0": {
+            "ChatterBotApi\\": "src/"
+        }
+    },
+    "config": {
+        "disable-tls": true,
+        "secure-http": false
+    },
+    "require": {
+        "mashape/unirest-php": "^3.0"
+    }
+}
