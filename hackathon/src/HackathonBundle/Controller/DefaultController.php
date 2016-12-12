@@ -26,43 +26,66 @@ class DefaultController extends Controller
     {
         $s = $request->get('question');
 
-        if(preg_match('(^recherche)',$s)){
+        if (preg_match('(^recherche)', $s)) {
             $search = explode('recherche', $s);
-            $url = 'http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search='.urlencode($search[1]).'&thumbsize=all';
-            $json = json_decode(file_get_contents($url));
 
-            if($json->message == "No Videos found!"){
-                $json = json_encode(array('url' => $url, 'rep' => 'Rien.. :('));
-                return new Response($json);
+            if ($search[1] != null) {
+                $url = 'http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search=' . urlencode($search[1]) . '&thumbsize=all';
+
+                $json = json_decode(file_get_contents($url));
+
+                if (isset($json->message) && $json->message == "No Videos found!") {
+                    $json = json_encode(array('url' => $url, 'rep' => 'Rien.. :('));
+                    return new Response($json);
+                }
+
+                $allVideos = array();
+                foreach ($json->videos as $video) {
+                    array_push($allVideos, $video->video->url);
+                }
+
+                $allVideos = array();
+                foreach ($json->videos as $video) {
+                    array_push($allVideos, $video->video->url);
+                }
+
+                $s = array_rand($allVideos);
+                $json = json_encode(array('url' => $url, 'rep' => '<a href="' . $allVideos[$s] . '">Petit coquin</a>'));
+
+            } else {
+                $url = 'http://www.redtube.com/';
+
+                $json = json_encode(array('url' => $url, 'rep' => '<a href="' . $url . '">Petit coquin</a>'));
             }
 
-            $allVideos = array();
-            foreach($json->videos as $video){
-                array_push($allVideos, $video->video->url);
-            }
 
-            $s = array_rand($allVideos);
-            $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$allVideos[$s].'">Petit coquin</a>'));
             return new Response($json);
         }
 
-        if(preg_match('(^gif)',$s)){
+        if (preg_match('(^gif)', $s)) {
             $search = explode('gif', $s);
-            $url = 'http://api.giphy.com/v1/gifs/search?q='.urlencode($search[1]).'&api_key=dc6zaTOxFJmzC';
+
+            if ($search[1] == null) {
+                $url = 'http://giphy.com/';
+                $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$url.'">Va voir ici ;)</a>'));
+                return new Response($json);
+            }
+
+            $url = 'http://api.giphy.com/v1/gifs/search?q=' . urlencode($search[1]) . '&api_key=dc6zaTOxFJmzC';
             $json = json_decode(file_get_contents($url));
 
-            if(empty($json->data)){
+            if (empty($json->data)) {
                 $json = json_encode(array('url' => $url, 'rep' => 'Rien.. :('));
                 return new Response($json);
             }
 
             $allGifs = array();
-            foreach($json->data as $gifs){
+            foreach ($json->data as $gifs) {
                 array_push($allGifs, $gifs->images->original->url);
             }
 
             $s = array_rand($allGifs);
-            $json = json_encode(array('url' => $url, 'rep' => '<img src="'.$allGifs[$s].'">'));
+            $json = json_encode(array('url' => $url, 'rep' => '<img src="' . $allGifs[$s] . '">'));
             return new Response($json);
         }
 
@@ -89,18 +112,14 @@ class ChatterBotFactory
 {
     public function create($type, $arg = null)
     {
-        switch ($type)
-        {
-            case ChatterBotType::CLEVERBOT:
-            {
+        switch ($type) {
+            case ChatterBotType::CLEVERBOT: {
                 return new _Cleverbot('http://www.cleverbot.com', 'http://www.cleverbot.com/webservicemin?uc=321', 26);
             }
-            case ChatterBotType::JABBERWACKY:
-            {
+            case ChatterBotType::JABBERWACKY: {
                 return new _Cleverbot('http://jabberwacky.com', 'http://jabberwacky.com/webservicemin', 20);
             }
-            case ChatterBotType::PANDORABOTS:
-            {
+            case ChatterBotType::PANDORABOTS: {
                 if ($arg == null) {
                     throw new Exception('PANDORABOTS needs a botid arg');
                 }
@@ -250,17 +269,14 @@ class _CleverbotSession extends ChatterBotSession
 //            $this->vars['divert'] = _utils_string_at_index($responseValues, 23);
         $responseThought = new ChatterBotThought();
         $text = _utils_string_at_index($responseValues, 0);
-        if (!is_null($text))
-        {
+        if (!is_null($text)) {
             $text = preg_replace_callback(
                 '/\|([01234567890ABCDEF]{4})/',
                 function ($matches) {
                     return iconv('UCS-4LE', 'UTF-8', pack('V', hexdec($matches[0])));
                 },
                 $text);
-        }
-        else
-        {
+        } else {
             $text = '';
         }
         $responseThought->setText($text);
@@ -316,12 +332,9 @@ class _PandorabotsSession extends ChatterBotSession
         $element = new SimpleXMLElement($response);
         $result = $element->xpath('//result/that/text()');
         $responseThought = new ChatterBotThought();
-        if (isset($result[0][0]))
-        {
+        if (isset($result[0][0])) {
             $responseThought->setText(trim($result[0][0]));
-        }
-        else
-        {
+        } else {
             $responseThought->setText("");
         }
         return $responseThought;
@@ -336,43 +349,30 @@ function _utils_request($url, &$cookies, $params, $headers = null)
 {
     $contextParams = array();
     $contextParams['http'] = array();
-    if ($params)
-    {
+    if ($params) {
         $contextParams['http']['method'] = 'POST';
         $contextParams['http']['content'] = http_build_query($params);
         $contextParams['http']['header'] = "Content-type: application/x-www-form-urlencoded\r\n";
-    }
-    else
-    {
+    } else {
         $contextParams['http']['method'] = 'GET';
     }
-    if (!is_null($cookies) && count($cookies) > 0)
-    {
+    if (!is_null($cookies) && count($cookies) > 0) {
         $cookieHeader = "Cookie: ";
-        foreach ($cookies as $cookieName => $cookie)
-        {
+        foreach ($cookies as $cookieName => $cookie) {
             $cookieHeader .= $cookie . ";";
         }
         $cookieHeader .= "\r\n";
-        if (isset($contextParams['http']['header']))
-        {
+        if (isset($contextParams['http']['header'])) {
             $contextParams['http']['header'] .= $cookieHeader;
-        }
-        else
-        {
+        } else {
             $contextParams['http']['header'] = $cookieHeader;
         }
     }
-    if (!is_null($headers))
-    {
-        foreach ($headers as $headerName => $headerValue)
-        {
-            if (isset($contextParams['http']['header']))
-            {
+    if (!is_null($headers)) {
+        foreach ($headers as $headerName => $headerValue) {
+            if (isset($contextParams['http']['header'])) {
                 $contextParams['http']['header'] .= "$headerName: $headerValue\r\n";
-            }
-            else
-            {
+            } else {
                 $contextParams['http']['header'] = "$headerName: $headerValue\r\n";
             }
         }
@@ -380,12 +380,9 @@ function _utils_request($url, &$cookies, $params, $headers = null)
     $context = stream_context_create($contextParams);
     $fp = fopen($url, 'rb', false, $context);
     $response = stream_get_contents($fp);
-    if (!is_null($cookies))
-    {
-        foreach ($http_response_header as $header)
-        {
-            if (preg_match('@Set-Cookie: (([^=]+)=[^;]+)@i', $header, $matches))
-            {
+    if (!is_null($cookies)) {
+        foreach ($http_response_header as $header) {
+            if (preg_match('@Set-Cookie: (([^=]+)=[^;]+)@i', $header, $matches)) {
                 $cookies[$matches[2]] = $matches[1];
             }
         }
@@ -396,12 +393,9 @@ function _utils_request($url, &$cookies, $params, $headers = null)
 
 function _utils_string_at_index($strings, $index)
 {
-    if (count($strings) > $index)
-    {
+    if (count($strings) > $index) {
         return $strings[$index];
-    }
-    else
-    {
+    } else {
         return '';
     }
 }
