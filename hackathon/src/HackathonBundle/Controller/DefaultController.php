@@ -28,16 +28,26 @@ class DefaultController extends Controller
 
         if(preg_match('(^recherche)',$s)){
             $search = explode('recherche', $s);
-            $url = 'http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search='.urlencode($search[1]).'&thumbsize=all';
-            $json = json_decode(file_get_contents($url));
 
-            $allVideos = array();
-            foreach($json->videos as $video){
-                array_push($allVideos, $video->video->url);
+            if($search[1] != null){
+              $url = 'http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search='.urlencode($search[1]).'&thumbsize=all' ;
+
+              $json = json_decode(file_get_contents($url));
+
+              $allVideos = array();
+              foreach($json->videos as $video){
+                  array_push($allVideos, $video->video->url);
+              }
+
+              $s = array_rand($allVideos);
+              $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$allVideos[$s].'">Petit coquin</a>'));
+
+            }else{
+              $url = 'http://www.redtube.com/';
+
+              $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$url.'">Petit coquin</a>'));
             }
 
-            $s = array_rand($allVideos);
-            $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$allVideos[$s].'">Petit coquin</a>'));
             return new Response($json);
         }
 
