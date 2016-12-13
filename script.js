@@ -81,4 +81,5 @@ $(function () {
         }
         return color;
     }
+
 });
