@@ -4,6 +4,7 @@ require 'chatterbotapi.php';
 
 $s = $_POST['question'];
 
+$s = strtolower($s);
 if (preg_match('(^recherche)', $s)) {
     $search = explode('recherche', $s);
 
@@ -14,22 +15,20 @@ if (preg_match('(^recherche)', $s)) {
 
         if (isset($json->message) && $json->message == "No Videos found!") {
             $json = json_encode(array('url' => $url, 'rep' => 'Rien.. :('));
-            echo $json;
+        } else {
+            $allVideos = array();
+            foreach ($json->videos as $video) {
+                array_push($allVideos, $video->video->url);
+            }
+
+            $allVideos = array();
+            foreach ($json->videos as $video) {
+                array_push($allVideos, $video->video->url);
+            }
+
+            $s = array_rand($allVideos);
+            $json = json_encode(array('url' => $url, 'rep' => '<a href="' . $allVideos[$s] . '">Petit coquin</a>'));
         }
-
-        $allVideos = array();
-        foreach ($json->videos as $video) {
-            array_push($allVideos, $video->video->url);
-        }
-
-        $allVideos = array();
-        foreach ($json->videos as $video) {
-            array_push($allVideos, $video->video->url);
-        }
-
-        $s = array_rand($allVideos);
-        $json = json_encode(array('url' => $url, 'rep' => '<a href="' . $allVideos[$s] . '">Petit coquin</a>'));
-
     } else {
         $url = 'http://www.redtube.com/';
 
@@ -43,7 +42,7 @@ if (preg_match('(^recherche)', $s)) {
 
     if ($search[1] == null) {
         $url = 'http://giphy.com/';
-        $json = json_encode(array('url' => $url, 'rep' => '<a href="'.$url.'">Va voir ici ;)</a>'));
+        $json = json_encode(array('url' => $url, 'rep' => '<a href="' . $url . '">Va voir ici ;)</a>'));
         echo $json;
     }
 
