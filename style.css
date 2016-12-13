@@ -163,7 +163,9 @@ img {
 }
 
 aside li {
-    font-size: 10px;
+    font-size: 11px;
     margin-left: 15px;
     list-style-type: disc;
+    letter-spacing: 2.5px;
+    line-height: 17px;
 }
