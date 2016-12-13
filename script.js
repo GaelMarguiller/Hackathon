@@ -38,7 +38,7 @@ $(function () {
                 question.val('');
             } else {
                 question.attr({'disabled': true});
-                answer.append('Moi : ' + question.val() + '<br><span class="tempAnswer">EDI : <span class="point1">•</span><span class="point2">•</span><span class="point3">•</span></span>');
+                answer.append('Moi : ' + question.val() + '<br><span class="tempAnswer">IDA : <span class="point1">•</span><span class="point2">•</span><span class="point3">•</span></span>');
                 answerNatif.scrollTop = answerNatif.scrollHeight;
 
                 var inter = setInterval(function () {
@@ -58,7 +58,7 @@ $(function () {
                         question.val('');
                         question.attr({'disabled': false});
                         question.focus();
-                        answer.append('EDI : ' + data.rep + '<br>');
+                        answer.append('IDA : ' + data.rep + '<br>');
                         var audio = new Audio(data.url);
                         audio.play();
                         answerNatif.scrollTop = answerNatif.scrollHeight;
