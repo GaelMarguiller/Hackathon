@@ -3,6 +3,7 @@ $(function () {
     var question = $('#question');
     var answer = $('.answers');
     var answerNatif = document.getElementsByClassName('answers')[0];
+    var subButton = $('#subButton');
 
     var prevCommand = [];
     var commandCount = 0;
@@ -37,7 +38,9 @@ $(function () {
                 answer.html('');
                 question.val('');
             } else {
+
                 question.attr({'disabled': true});
+                subButton.attr({'disabled': true});
                 answer.append('Moi : ' + question.val() + '<br><span class="tempAnswer">IDA : <span class="point1">•</span><span class="point2">•</span><span class="point3">•</span></span>');
                 answerNatif.scrollTop = answerNatif.scrollHeight;
 
@@ -57,6 +60,7 @@ $(function () {
                         $('.tempAnswer').remove();
                         question.val('');
                         question.attr({'disabled': false});
+                        subButton.attr({'disabled': false});
                         question.focus();
                         answer.append('IDA : ' + data.rep + '<br>');
                         var audio = new Audio(data.url);

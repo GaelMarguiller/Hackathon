@@ -149,8 +149,8 @@ aside {
     height: 20%;
     color: white;
     margin: auto;
-    position: absolute;
-    top: 0; left: 2%; bottom: 0; right: 0;
+    margin-left: 15%;
+    margin-top: 10px;
 }
 
 aside h2 {
