@@ -61,7 +61,7 @@ if (preg_match('(^recherche)', $s)) {
     }
 
     $s = array_rand($allGifs);
-    $json = json_encode(array('url' => $url, 'rep' => '<img src="' . $allGifs[$s] . '">'));
+    $json = json_encode(array('url' => $url, 'rep' => '<img style="max-width:300px;" src="' . $allGifs[$s] . '">'));
     echo $json;
 } else {
 
