@@ -144,3 +144,22 @@ a {
     color: #6953A6;
     font-weight: bold;
 }
+
+aside {
+    height: 20%;
+    color: white;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 2%; bottom: 0; right: 0;
+}
+
+aside h2 {
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+aside li {
+    font-size: 10px;
+    margin-left: 15px;
+    list-style-type: disc;
+}
